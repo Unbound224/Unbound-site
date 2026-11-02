@@ -57,7 +57,7 @@ secret key or seed field exists anywhere. The bearer token is never put in a URL
 Stellar transactions; that belongs to `unbound-stellar` / the mobile wallet.
 
 ## Sibling versions
-Developed against `unbound-core` OpenAPI `1.0.0-draft` (copied to `fixtures/core-openapi.v1.json`) at the `claude/drips-wave-maintainer-projects-iwucl5` branches (untagged).
+Developed against `unbound-core` OpenAPI `1.0.0-draft` (copied to `fixtures/core-openapi.v1.json`) at the `main` branches (untagged).
 
 ## Minimal integration contract
 Always test the dependency path stated in ARCHITECTURE.md. Every new public endpoint/ABI/package message must be versioned and covered by consumer fixtures. See `docs/SRD.md` and `docs/TECHNICAL_BUILD.md`.
