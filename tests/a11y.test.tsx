@@ -108,6 +108,7 @@ describe('accessibility (axe-core in jsdom; contrast not checked)', () => {
       <main>
         <input type="text" />
         <button />
+        {/* eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text -- deliberate violation to prove the harness detects problems */}
         <img src="/x.png" />
       </main>,
     );
