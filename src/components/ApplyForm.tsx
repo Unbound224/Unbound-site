@@ -1,13 +1,16 @@
 'use client';
 
 import { useId, useState, type FormEvent } from 'react';
-import { apiBaseUrl, createClient, describeError } from '@/lib/api/client';
+import { describeError } from '@/lib/api/client';
+import { useSession } from '@/lib/session';
+import { SignInForm } from '@/components/SignInForm';
 import { MerchantApplication, type Merchant } from '@/lib/api/schemas';
 
 type Errors = Partial<Record<keyof MerchantApplication, string>>;
 
-export function ApplyForm({ client }: { client?: ReturnType<typeof createClient> } = {}) {
+export function ApplyForm() {
   const id = useId();
+  const session = useSession();
   const [errors, setErrors] = useState<Errors>({});
   const [busy, setBusy] = useState(false);
   const [failure, setFailure] = useState<string | null>(null);
@@ -31,8 +34,7 @@ export function ApplyForm({ client }: { client?: ReturnType<typeof createClient>
     setErrors({});
     setBusy(true);
     try {
-      const token = String(fd.get('token') ?? '').trim();
-      setDone(await (client ?? createClient({ baseUrl: apiBaseUrl(), ...(token ? { token } : {}) })).apply(parsed.data));
+      setDone(await session.client().apply(parsed.data));
     } catch (err) {
       setFailure(describeError(err));
     } finally {
@@ -48,6 +50,15 @@ export function ApplyForm({ client }: { client?: ReturnType<typeof createClient>
           Reference <code>{done.id}</code>. Status: <strong>{done.status}</strong>. This is not an approval. A reviewer must verify your legal identity
           and your signed redemption policy before any credit can be listed.
         </p>
+      </div>
+    );
+  }
+
+  if (!session.signedIn) {
+    return (
+      <div className="space-y-4">
+        <p className="max-w-2xl text-muted">Sign in or create an account first. Your application is attached to your account.</p>
+        <SignInForm />
       </div>
     );
   }
@@ -82,16 +93,6 @@ export function ApplyForm({ client }: { client?: ReturnType<typeof createClient>
       {field('legalName', 'Legal name', 'The registered name of the issuing business.')}
       {field('jurisdiction', 'Jurisdiction', 'Where the business is registered and where redemption terms apply.')}
       {field('contact', 'Redemption contact', 'An email or URL where holders and reviewers can reach you.')}
-      <details className="rounded-md border border-line p-3">
-        <summary className="cursor-pointer font-medium">Developer session (Testnet only)</summary>
-        <p className="mt-2 text-sm text-muted">
-          Merchant sign-in is not built yet, so the API currently needs a session token. Paste a Testnet/dev token here; it is kept only in this form.
-        </p>
-        <label htmlFor={`${id}-token`} className="mt-2 block font-medium">
-          Session token
-        </label>
-        <input id={`${id}-token`} name="token" type="password" autoComplete="off" className="w-full rounded-md border border-ink px-3 py-2" />
-      </details>
       {failure ? (
         <p role="alert" className="font-medium text-red-800">
           {failure}
