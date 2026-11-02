@@ -68,3 +68,24 @@ describe('api client', () => {
     expect(describeError(new Error('stack with secrets'))).toBe('Something went wrong. Please try again.');
   });
 });
+
+describe('auth calls', () => {
+  const creds = { email: 'a@example.invalid', password: 'correct horse battery staple' };
+  it('login posts credentials and parses the session; logout sends the bearer token', async () => {
+    const f = vi.fn().mockResolvedValueOnce(json({ token: 't1', role: 'merchant', accountId: 'acc_1' })).mockResolvedValueOnce(json({ ok: true }));
+    const c = createClient({ baseUrl: 'http://x', fetchImpl: f });
+    expect((await c.login(creds)).token).toBe('t1');
+    expect(JSON.parse(f.mock.calls[0]![1].body)).toEqual(creds);
+    await createClient({ baseUrl: 'http://x', token: 't1', fetchImpl: f }).logout();
+    expect((f.mock.calls[1]![1].headers as Record<string, string>).authorization).toBe('Bearer t1');
+  });
+  it('rejects short passwords before any request', () => {
+    const f = vi.fn();
+    expect(() => createClient({ baseUrl: 'http://x', fetchImpl: f }).login({ email: 'a@example.invalid', password: 'short' })).toThrow();
+    expect(f).not.toHaveBeenCalled();
+  });
+  it('register and login endpoints exist in the core OpenAPI snapshot (covered by the contract test)', () => {
+    expect(Object.keys(ENDPOINTS)).toEqual(expect.arrayContaining(['register', 'login', 'logout']));
+  });
+});
+

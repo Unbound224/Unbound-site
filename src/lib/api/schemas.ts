@@ -49,3 +49,14 @@ export const MerchantApplication = z
   })
   .strict();
 export type MerchantApplication = z.infer<typeof MerchantApplication>;
+
+export const LoginResult = z.object({ token: z.string().min(1), role: z.enum(['user', 'merchant', 'admin']), accountId: z.string() });
+export type LoginResult = z.infer<typeof LoginResult>;
+
+export const Credentials = z
+  .object({
+    email: z.string().trim().min(3, 'Enter your email').email('Enter a valid email'),
+    password: z.string().min(12, 'Password must be at least 12 characters'),
+  })
+  .strict();
+export type Credentials = z.infer<typeof Credentials>;
