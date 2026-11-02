@@ -1,0 +1,40 @@
+@import 'tailwindcss';
+
+/* Brand tokens from brand/tokens.json. UI direction is intentionally revisable. */
+:root {
+  --brand-primary: #7537f5;
+  --brand-ink: #10092e;
+  --brand-accent: #ad8aff;
+  --brand-surface: #ffffff;
+  --brand-on-dark: #fbfaf8;
+  --brand-muted: #4b4566;
+  --brand-line: #e3dff0;
+}
+
+@theme inline {
+  --color-primary: var(--brand-primary);
+  --color-ink: var(--brand-ink);
+  --color-accent: var(--brand-accent);
+  --color-surface: var(--brand-surface);
+  --color-ondark: var(--brand-on-dark);
+  --color-muted: var(--brand-muted);
+  --color-line: var(--brand-line);
+}
+
+body {
+  background: var(--brand-surface);
+  color: var(--brand-ink);
+  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+:focus-visible {
+  outline: 3px solid var(--brand-primary);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
