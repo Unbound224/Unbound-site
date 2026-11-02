@@ -102,7 +102,7 @@ function Console() {
                 {load.assets.map((a) => (
                   <li key={a.id} className="rounded-lg border border-line p-4">
                     <p className="font-semibold">
-                      {a.assetCode} <span className="ml-2 rounded bg-deep px-2 py-0.5 text-xs text-ondark">{a.status}</span>
+                      {a.assetCode} <span className="ml-2 rounded bg-primary px-2 py-0.5 text-xs font-semibold text-white">{a.status}</span>
                     </p>
                     <p className="text-sm text-muted">Issuer {a.issuer}</p>
                     <p className="text-sm">{a.policy.unitOfAccount}</p>
