@@ -1,40 +1,333 @@
 @import 'tailwindcss';
 
-/* Brand tokens from brand/tokens.json. UI direction is intentionally revisable. */
+/*
+ * Brand tokens from brand/tokens.json (primary #7537F5, ink/dark #10092E, accent #AD8AFF, surface #FFFFFF, onDark #FBFAF8).
+ * Semantic roles below switch between light and dark; `deep` / `on-deep` are always the brand's dark ink pair.
+ */
 :root {
+  color-scheme: light;
   --brand-primary: #7537f5;
-  --brand-ink: #10092e;
+  --brand-primary-strong: #5f22e0;
   --brand-accent: #ad8aff;
-  --brand-surface: #ffffff;
-  --brand-on-dark: #fbfaf8;
-  --brand-muted: #4b4566;
-  --brand-line: #e3dff0;
+  --brand-deep: #10092e;
+  --brand-on-deep: #fbfaf8;
+
+  --bg: #fbfaf8;
+  --bg-soft: #f4f0fe;
+  --surface: #ffffff;
+  --ink: #10092e;
+  --muted: #4b4566;
+  --line: #e3dff0;
+  --link: #6129e0;
+  --credit-bg: #10092e;
+  --danger: #a1122c;
+  --ok: #14663a;
+  --glow: rgb(117 55 245 / 0.18);
+  --shadow: 0 1px 2px rgb(16 9 46 / 0.06), 0 12px 32px -12px rgb(16 9 46 / 0.18);
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #0c0724;
+  --bg-soft: #140c38;
+  --surface: #1a1145;
+  --ink: #fbfaf8;
+  --muted: #bdb6d9;
+  --line: #2e2566;
+  --link: #c3a8ff;
+  --credit-bg: #2a1a74;
+  --danger: #ff9fb0;
+  --ok: #7be0a6;
+  --glow: rgb(117 55 245 / 0.35);
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 16px 40px -16px rgb(0 0 0 / 0.7);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
+    --bg: #0c0724;
+    --bg-soft: #140c38;
+    --surface: #1a1145;
+    --ink: #fbfaf8;
+    --muted: #bdb6d9;
+    --line: #2e2566;
+    --link: #c3a8ff;
+  --credit-bg: #2a1a74;
+    --danger: #ff9fb0;
+    --ok: #7be0a6;
+    --glow: rgb(117 55 245 / 0.35);
+    --shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 16px 40px -16px rgb(0 0 0 / 0.7);
+  }
 }
 
 @theme inline {
   --color-primary: var(--brand-primary);
-  --color-ink: var(--brand-ink);
+  --color-primary-strong: var(--brand-primary-strong);
   --color-accent: var(--brand-accent);
-  --color-surface: var(--brand-surface);
-  --color-ondark: var(--brand-on-dark);
-  --color-muted: var(--brand-muted);
-  --color-line: var(--brand-line);
+  --color-deep: var(--brand-deep);
+  --color-ondark: var(--brand-on-deep);
+  --color-bg: var(--bg);
+  --color-soft: var(--bg-soft);
+  --color-surface: var(--surface);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-link: var(--link);
+  --color-danger: var(--danger);
+  --color-ok: var(--ok);
+  --font-sans: 'Plus Jakarta Sans Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --shadow-card: var(--shadow);
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
 }
 
 body {
-  background: var(--brand-surface);
-  color: var(--brand-ink);
-  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--brand-accent);
+  color: var(--brand-deep);
 }
 
 :focus-visible {
-  outline: 3px solid var(--brand-primary);
-  outline-offset: 2px;
+  outline: 3px solid var(--brand-accent);
+  outline-offset: 3px;
+  border-radius: 6px;
+}
+
+/* ---------- Reusable pieces (in the components layer so utilities can override them) ---------- */
+@layer components {
+.container-page {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 72rem;
+  padding-inline: 1rem;
+}
+@media (min-width: 640px) {
+  .container-page {
+    padding-inline: 1.5rem;
+  }
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  border-radius: 0.75rem;
+  padding: 0.7rem 1.15rem;
+  font-weight: 650;
+  line-height: 1.2;
+  transition:
+    transform 160ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease,
+    box-shadow 160ms ease;
+}
+.btn:hover {
+  transform: translateY(-1px);
+}
+.btn-primary {
+  background: var(--brand-primary);
+  color: #fff;
+  box-shadow: 0 8px 24px -10px rgb(117 55 245 / 0.7);
+}
+.btn-primary:hover {
+  background: var(--brand-primary-strong);
+}
+.btn-ghost {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+}
+.btn-ghost:hover {
+  border-color: var(--brand-accent);
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--link);
+}
+
+.card {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 1.25rem;
+  box-shadow: var(--shadow);
+}
+.credit-card {
+    background: var(--credit-bg);
+  }
+  .card-hover {
+  transition:
+    transform 220ms ease,
+    border-color 220ms ease,
+    box-shadow 220ms ease;
+}
+.card-hover:hover {
+  transform: translateY(-3px);
+  border-color: color-mix(in srgb, var(--brand-accent) 70%, var(--line));
+}
+
+.hero-backdrop {
+  background:
+    radial-gradient(60rem 30rem at 85% -10%, var(--glow), transparent 60%),
+    radial-gradient(40rem 24rem at -10% 30%, color-mix(in srgb, var(--glow) 60%, transparent), transparent 60%);
+}
+.grid-lines {
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--line) 60%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--line) 60%, transparent) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse at 50% 0%, #000 30%, transparent 75%);
+}
+
+/* FAQ disclosure */
+.faq summary {
+  list-style: none;
+  cursor: pointer;
+}
+.faq summary::-webkit-details-marker {
+  display: none;
+}
+.faq .chev {
+  transition: transform 200ms ease;
+}
+.faq[open] .chev {
+  transform: rotate(45deg);
+}
+
+}
+
+/* ---------- Motion ---------- */
+/* Entrance reveals only hide content once JS has marked the document (class "js"), so no-JS users see everything. */
+.js [data-reveal] {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity 700ms cubic-bezier(0.2, 0.7, 0.2, 1),
+    transform 700ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+.js [data-reveal].is-revealed {
+  opacity: 1;
+  transform: none;
+}
+
+@keyframes flow-down {
+  0% {
+    transform: translateY(-6px);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(var(--flow-distance, 64px));
+    opacity: 0;
+  }
+}
+@keyframes dash {
+  to {
+    stroke-dashoffset: -24;
+  }
+}
+@keyframes expiry {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0.08);
+  }
+}
+@keyframes step-on {
+  0%,
+  8% {
+    background: var(--line);
+    box-shadow: none;
+  }
+  14%,
+  100% {
+    background: var(--brand-primary);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--brand-primary) 25%, transparent);
+  }
+}
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+.flow-dot {
+  animation: flow-down 2.4s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+}
+.flow-dash {
+  animation: dash 1.2s linear infinite;
+}
+.expiry-bar {
+  transform-origin: left;
+  animation: expiry 9s linear infinite;
+}
+.state-step {
+  animation: step-on 9s ease-out infinite;
+  animation-delay: var(--step-delay, 0s);
+  background: var(--line);
+}
+.float-slow {
+  animation: float 7s ease-in-out infinite;
+}
+.pulse-ring {
+  animation: pulse-ring 2.2s ease-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  * {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
     animation: none !important;
     transition: none !important;
+  }
+  .js [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+  .flow-dot {
+    opacity: 0;
+  }
+  .state-step {
+    background: var(--brand-primary);
   }
 }

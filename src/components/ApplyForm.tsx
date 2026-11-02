@@ -75,13 +75,13 @@ export function ApplyForm() {
         autoComplete="off"
         aria-invalid={errors[name] ? true : undefined}
         aria-describedby={`${id}-${name}-hint${errors[name] ? ` ${id}-${name}-err` : ''}`}
-        className="w-full rounded-md border border-ink px-3 py-2"
+        className="w-full rounded-md border border-ink bg-surface px-3 py-2 text-ink"
       />
       <p id={`${id}-${name}-hint`} className="text-sm text-muted">
         {hint}
       </p>
       {errors[name] ? (
-        <p id={`${id}-${name}-err`} className="text-sm font-medium text-red-800">
+        <p id={`${id}-${name}-err`} className="text-sm font-medium text-danger">
           {errors[name]}
         </p>
       ) : null}
@@ -94,7 +94,7 @@ export function ApplyForm() {
       {field('jurisdiction', 'Jurisdiction', 'Where the business is registered and where redemption terms apply.')}
       {field('contact', 'Redemption contact', 'An email or URL where holders and reviewers can reach you.')}
       {failure ? (
-        <p role="alert" className="font-medium text-red-800">
+        <p role="alert" className="font-medium text-danger">
           {failure}
         </p>
       ) : null}

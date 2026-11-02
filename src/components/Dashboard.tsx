@@ -83,7 +83,7 @@ function Console() {
         {notice ? <p className="rounded-md border border-line p-3">{notice}</p> : null}
         {load.status === 'loading' ? <p>Loading from the Unbound API...</p> : null}
         {load.status === 'error' ? (
-          <p role="alert" className="font-medium text-red-800">
+          <p role="alert" className="font-medium text-danger">
             {load.message}
           </p>
         ) : null}
@@ -102,7 +102,7 @@ function Console() {
                 {load.assets.map((a) => (
                   <li key={a.id} className="rounded-lg border border-line p-4">
                     <p className="font-semibold">
-                      {a.assetCode} <span className="ml-2 rounded bg-ink px-2 py-0.5 text-xs text-ondark">{a.status}</span>
+                      {a.assetCode} <span className="ml-2 rounded bg-deep px-2 py-0.5 text-xs text-ondark">{a.status}</span>
                     </p>
                     <p className="text-sm text-muted">Issuer {a.issuer}</p>
                     <p className="text-sm">{a.policy.unitOfAccount}</p>
@@ -140,7 +140,7 @@ function Console() {
                         <tr key={r.id} className="border-b border-line align-top">
                           <td className="py-2 pr-3">
                             <code className="text-sm">{r.id}</code>
-                            {r.refundDue ? <p className="text-sm font-medium text-red-800">Refund owed to holder</p> : null}
+                            {r.refundDue ? <p className="text-sm font-medium text-danger">Refund owed to holder</p> : null}
                           </td>
                           <td className="py-2 pr-3">
                             {r.amount} {r.asset.code}

@@ -5,7 +5,7 @@ export const metadata: Metadata = { title: 'Partner docs' };
 
 export default function DocsPage() {
   return (
-    <article className="max-w-3xl space-y-6">
+    <article className="container-page max-w-3xl space-y-6 py-14">
       <h1 className="text-3xl font-bold">Partner onboarding</h1>
       <p className="text-muted">What a retailer must do to issue redeemable credit on the Unbound Testnet demo. Nothing here is a live offering.</p>
 
