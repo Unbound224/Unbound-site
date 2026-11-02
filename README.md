@@ -31,28 +31,29 @@ Start with:
 ## Status (honest)
 | Area | State |
 |---|---|
-| Landing page (honest copy: Testnet, no store availability, explicit non-goals) | Implemented |
-| Partner onboarding docs page | Implemented (static copy) |
-| Merchant application form (accessible validation) | Implemented; posts to `unbound-core` `POST /v1/merchants/apply` |
-| Merchant console skeleton: credit programs + redemption queue; "confirm fulfilment" enabled only when the return is ledger-confirmed | Implemented against the core API contract |
-| Typed API client (zod-validated responses, timeouts, typed errors) | Implemented, unit-tested; every endpoint used is asserted to exist in `fixtures/core-openapi.v1.json` (snapshot of core's OpenAPI) |
-| **Merchant sign-in** | **Not built.** The console takes a pasted dev/Testnet session token held only in memory. Core also has no real merchant auth yet |
-| **Run against a live core** | **Not done.** Tested with injected fetch/fake clients only; no browser E2E |
-| Issuing credit / policy signing UI | Not built. Signing must happen offline with the issuer key; no helper exists yet |
+| Landing page (honest copy: Testnet, no store availability, explicit non-goals), partner docs | Implemented |
+| **Sign-in / registration** against `unbound-core` (`/v1/auth/*`); session token held in React memory only (no storage/cookies); sign-out revokes it server-side | Implemented, tested |
+| Merchant application form (requires a session) | Implemented, tested |
+| Merchant console: verified credit programs + redemption queue; "Confirm fulfilment" enabled only when the return is ledger-confirmed | Implemented, tested |
+| Typed API client (zod-validated responses, timeouts, typed errors); every endpoint it calls is asserted to exist in `fixtures/core-openapi.v1.json` | Implemented |
+| **Live-core test**: spawns the real `unbound-core` process (sibling `../Unbound-core`, SQLite, FakeStellarGateway test adapter, synthetic seed) and drives the real components over HTTP: login, queue, confirm, server-side refusal, logout revocation | Implemented; skipped if the sibling is absent. No Stellar involved |
+| **Accessibility checks** (axe-core via vitest-axe) on landing, docs, sign-in (pristine/errors/register), forms and console states, plus a sanity test that the harness detects violations | Implemented. **Colour contrast is NOT checked** (jsdom), no keyboard/screen-reader manual audit |
+| Issuing credit, signing a redemption policy in the UI | Not built. Policies are signed offline with the issuer key; no helper exists yet |
+| Admin console (verify merchants, disputes, pauses), dispute UI, password reset, MFA | Not built |
+| Browser E2E (Playwright), Lighthouse | Not done |
 | Official store badges | Not included: there are no store listings |
-| Playwright/e2e, Lighthouse, a11y audit tooling | Not done (component tests assert labels/roles/alerts only) |
 
 ## Quick start
 ```
 npm ci
-cp .env.example .env.local     # set NEXT_PUBLIC_API_URL
+cp .env.example .env.local     # set NEXT_PUBLIC_API_URL (a running unbound-core)
 npm run dev                    # http://localhost:3000
 npm run check                  # lint + typecheck + tests + production build
 ```
 
 ## Security notes
-No secret key, seed or password field exists anywhere. The bearer token is never put in a URL or persisted
-(no localStorage/cookies). Security headers are set in `next.config.ts`. This site never builds or signs
+The only secret the site handles is the merchant's own account password, sent to core over the API (use TLS outside local dev). No
+secret key or seed field exists anywhere. The bearer token is never put in a URL or persisted (no localStorage/cookies). Security headers are set in `next.config.ts`. This site never builds or signs
 Stellar transactions; that belongs to `unbound-stellar` / the mobile wallet.
 
 ## Sibling versions
