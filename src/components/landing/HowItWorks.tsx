@@ -40,7 +40,7 @@ export function HowItWorks() {
           id="how-title"
           eyebrow="How it works"
           title="From a merchant's promise to value you can move"
-          lead="Four steps, each enforced in code and on the ledger. The issuer stays responsible for redemption the whole way through."
+          lead="Every step is enforced in code and on the ledger, and the issuer stays responsible for redemption the whole way through. Use the numbers to walk through it."
         />
         <FlowStory />
         <div className="relative mt-8">

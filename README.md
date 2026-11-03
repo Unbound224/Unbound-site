@@ -4,7 +4,7 @@
 
 # Unbound-site
 
-**The public face of Unbound: the landing page, partner docs and the merchant console where issuers confirm redemptions.**
+**The public face of Unbound: the landing page, partner docs, the merchant console where issuers answer redemptions, and the reviewer console.**
 
 [![CI](https://github.com/Unbound224/Unbound-site/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Unbound224/Unbound-site/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-7537F5.svg)](./LICENSE)
@@ -35,24 +35,36 @@ own device, or redeem it with the issuer.
 
 ## This repository
 
-A Next.js app with two halves:
+A Next.js app with three parts:
 
-- **Landing** - value proposition, how it works (issuer -> credit -> exchange -> redemption), trust and safety,
-  consumer app, merchants, the four repositories with an honest status table, FAQ. Light and dark themes, responsive
-  down to 360 px, entrance animations that switch off under `prefers-reduced-motion`.
-- **Merchant console** - sign in against `Unbound-core`, see verified credit programs and the redemption queue, and
-  confirm fulfilment only once the returned credit is confirmed on the ledger. The session token lives in memory only.
+- **Landing** - value proposition; an animated, step-by-step diagram of issuer -> credit -> exchange -> redemption
+  escrow (with confirm / reject / timeout); an interactive quote explainer (slippage cap and minimum received, exact
+  base-unit maths, illustrative rate); who it is for (shoppers, merchants, developers); an animated "under the hood"
+  data path; trust and safety; the Android download (straight to the latest APK) with install help; FAQ. Light and
+  dark themes, responsive down to 360 px, animations off under `prefers-reduced-motion`.
+- **Merchant console** (`/merchant`) - sign in against `Unbound-core`, see verified credit programs, the redemption
+  queue (escrowed and direct returns, deadline, confirm or reject with a reason; escrow actions hand you the unsigned
+  transaction to sign with your issuer key and take the signed envelope back), and disputes with replies. Password
+  reset at `/merchant/forgot-password`.
+- **Reviewer console** (`/admin`) - issuer review queue (verify with an evidence reference, revoke with a reason),
+  disputes with the ruling form (escalated first), and the core maintenance jobs with run now.
 
-It never builds or signs Stellar transactions and never asks for a secret key.
+It never builds or signs Stellar transactions, never asks for a secret key, and keeps the session token in memory only.
 
 ### Screenshots
 
-Real captures of the production build (Playwright, Chromium). Full-page versions:
-[light](./docs/screenshots/desktop-full-light.png) · [dark](./docs/screenshots/desktop-full-dark.png).
+Real captures of the production build (Playwright, Chromium). Consoles show synthetic API data; nothing here is a
+real merchant or user. Full-page landing: [light](./docs/screenshots/desktop-full-light.png) · [dark](./docs/screenshots/desktop-full-dark.png).
 
-| Mobile (390 px), light | Mobile (390 px), dark | Merchant console (signed in to a locally seeded core) |
-|---|---|---|
-| <img src="./docs/screenshots/mobile-light.png" alt="Landing on mobile, light" width="220" /> | <img src="./docs/screenshots/mobile-dark.png" alt="Landing on mobile, dark" width="220" /> | <img src="./docs/screenshots/console-light.png" alt="Merchant console with synthetic redemption queue" width="420" /> |
+| How it works (animated, step 5) | Quote explainer |
+|---|---|
+| <img src="./docs/screenshots/flow-light.png" alt="Animated diagram: credit in the redemption escrow, confirm or refund" width="420" /> | <img src="./docs/screenshots/quote-explainer-dark.png" alt="Interactive slippage and minimum received explainer" width="420" /> |
+| **Who it is for** | **Under the hood** |
+| <img src="./docs/screenshots/audiences-light.png" alt="Shoppers, merchants and developers cards" width="420" /> | <img src="./docs/screenshots/under-the-hood-dark.png" alt="Phone to core to stellar gateway to Testnet data path" width="420" /> |
+
+| Mobile (390 px), light | Android download at 360 px | Merchant console (escrow queue) | Reviewer console |
+|---|---|---|---|
+| <img src="./docs/screenshots/mobile-light.png" alt="Landing on mobile, light" width="180" /> | <img src="./docs/screenshots/android-download-360-dark.png" alt="Download for Android with install help" width="180" /> | <img src="./docs/screenshots/console-light.png" alt="Merchant console with synthetic escrowed redemptions" width="260" /> | <img src="./docs/screenshots/admin-light.png" alt="Reviewer console with synthetic review queue" width="260" /> |
 
 ## Architecture
 
@@ -64,9 +76,9 @@ flowchart LR
   S["Unbound-site<br/>landing + merchant console"]
   C["Unbound-core<br/>HTTP API v1, policy, intents, audit"]
   G["Unbound-stellar<br/>SDK, gateway service, chain worker"]
-  N[("Stellar Testnet<br/>assets, trustlines, DEX")]
+  N[("Stellar Testnet<br/>assets, trustlines, DEX,<br/>Soroban redemption escrow")]
   M -- "quotes, intents, signed XDR" --> C
-  S -- "merchant auth, redemption queue" --> C
+  S -- "merchant + reviewer consoles" --> C
   C -- "quote / build / submit" --> G
   G -- "Horizon" --> N
   G -- "reconciliation events" --> C
@@ -108,12 +120,15 @@ Legend: **Built** = implemented and covered by automated tests in this repo. **N
 | Area | Status |
 |---|---|
 | Landing page: all sections, light/dark, responsive to 360 px, reduced motion, config-driven store badges | Built |
-| Sign-in / registration against core; token in memory only; sign-out revokes server-side | Built |
-| Merchant application form; console with programs and redemption queue; confirm only after ledger-confirmed return | Built |
+| Animated flow diagram (incl. Soroban escrow), interactive quote explainer, audiences, under-the-hood data path | Built; interaction, maths and axe tested |
+| Android download: button goes to `releases/latest/download/unbound-android.apk`, All releases, checksum, install help | Built (the link works once a `v*` tag has been released) |
+| Sign-in / registration against core; token in memory only; sign-out revokes server-side; password reset pages | Built |
+| Merchant console: programs, redemption queue with escrow state and deadline, confirm / reject with reason, escrow sign-and-submit panel, dispute replies | Built |
+| Reviewer console: issuer review queue (verify / revoke), dispute rulings, maintenance jobs | Built |
 | Typed API client (zod-validated, timeouts); every endpoint checked against core's OpenAPI fixture | Built |
 | Live-core test: spawns the real `Unbound-core` (SQLite, fake gateway, synthetic seed) and drives the components | Built (skipped without the sibling checkout) |
 | Accessibility: axe-core checks in jsdom on every page and state | Built; colour contrast and manual screen-reader audit not done |
-| Policy-signing helper, issuing credit from the UI, admin console, disputes UI, password reset, MFA | Not yet |
+| Policy-signing helper, issuing credit from the UI, signing escrow actions with a browser wallet (Freighter), MFA | Not yet |
 | Browser E2E in CI, Lighthouse, public deployment | Not yet |
 | Official store badges | Not shown: there are no store listings |
 
