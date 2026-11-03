@@ -10,6 +10,7 @@ import { ApiClientError, type Client } from '@/lib/api/client';
 import { canConfirm, whyNotConfirmable } from '@/lib/redemption';
 import type { Asset, Redemption } from '@/lib/api/schemas';
 import Home from '@/app/page';
+import { allClientMocks } from './client-mocks';
 import DocsPage from '@/app/docs/page';
 
 const asset: Asset = {
@@ -18,9 +19,10 @@ const asset: Asset = {
 };
 const red = (over: Partial<Redemption> = {}): Redemption => ({
   id: 'red_1', state: 'RETURN_CONFIRMED', asset: { code: 'SHOP', issuer: 'GISSUER' }, amount: '30.0000000', holder: 'GHOLDER',
-  returnTxHash: null, refundDue: false, rejectionReason: null, createdAt: 'x', updatedAt: 'x', ...over,
+  returnTxHash: null, refundDue: false, rejectionReason: null, mode: 'NATIVE', escrow: null, createdAt: 'x', updatedAt: 'x', ...over,
 });
 const fakeClient = (over: Partial<Client> = {}): Client => ({
+  ...allClientMocks(),
   register: vi.fn().mockResolvedValue({ id: 'acc_1', email: 'a@example.invalid' }),
   login: vi.fn().mockResolvedValue({ token: 'tok', role: 'merchant', accountId: 'acc_1' }),
   logout: vi.fn().mockResolvedValue({ ok: true }),
@@ -170,11 +172,12 @@ describe('Dashboard', () => {
     expect(client.listRedemptions).not.toHaveBeenCalled();
   });
 
-  it('renders programs and a redemption queue with a labelled table', async () => {
+  it('renders programs and a redemption queue', async () => {
     withSession(<Dashboard />, fakeClient());
     expect(await screen.findByText('SHOP')).toBeInTheDocument();
-    const table = screen.getByRole('table', { name: /redemption requests/i });
-    expect(within(table).getByRole('button', { name: /confirm fulfilment/i })).toBeEnabled();
+    const queue = screen.getByRole('region', { name: /redemption queue/i });
+    expect(within(queue).getByRole('button', { name: /confirm fulfilment/i })).toBeEnabled();
+    expect(within(queue).getByText('Direct return')).toBeInTheDocument();
   });
 
   it('disables confirm, with an explanation, until the return is ledger-confirmed', async () => {
@@ -191,7 +194,7 @@ describe('Dashboard', () => {
     await userEvent.click(await screen.findByRole('button', { name: /confirm fulfilment/i }));
     await waitFor(() => expect(client.confirmRedemption).toHaveBeenCalledWith('red_1'));
     expect(await screen.findByText(/confirmed as fulfilled/i)).toBeInTheDocument();
-    expect(await screen.findByText('Fulfilled')).toBeInTheDocument();
+    expect(await screen.findByText(/· Fulfilled/)).toBeInTheDocument();
   });
 
   it('shows the API error when confirmation is refused', async () => {

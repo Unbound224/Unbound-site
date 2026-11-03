@@ -9,7 +9,7 @@ import { existsSync, mkdtempSync, rmSync } from 'node:fs';
 import { createServer } from 'node:net';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { Dashboard } from '@/components/Dashboard';
@@ -81,7 +81,7 @@ d('site <-> real core process over HTTP', () => {
     render(<SessionProvider><Dashboard /></SessionProvider>);
     await signIn('definitely not the password');
     expect(await screen.findByRole('alert')).toHaveTextContent(/Check your email and password/);
-    expect(screen.queryByRole('table')).toBeNull();
+    expect(screen.queryByRole('region', { name: /redemption queue/i })).toBeNull();
   });
 
   it('signs in, shows the verified program and the redemption queue; only the ledger-confirmed return can be confirmed', async () => {
@@ -89,15 +89,15 @@ d('site <-> real core process over HTTP', () => {
     await signIn(ENV.SEED_MERCHANT_PASSWORD);
     expect(await screen.findByText('SHOP')).toBeInTheDocument();
     expect(screen.getByText(/1 SHOP = 1 USD of store credit \(synthetic\)/)).toBeInTheDocument();
-    const table = await screen.findByRole('table', { name: /redemption requests/i });
-    const buttons = [...table.querySelectorAll('button')];
+    const queue = await screen.findByRole('region', { name: /redemption queue/i });
+    const buttons = within(queue).getAllByRole('button', { name: /confirm fulfilment/i }) as HTMLButtonElement[];
     expect(buttons).toHaveLength(2);
     expect(buttons.filter((b) => !b.disabled)).toHaveLength(1);
     expect(screen.getByText(/not confirmed on the ledger yet/i)).toBeInTheDocument();
 
     await userEvent.click(buttons.find((b) => !b.disabled)!);
     expect(await screen.findByText(/confirmed as fulfilled/i)).toBeInTheDocument();
-    expect(await screen.findByText('Fulfilled')).toBeInTheDocument();
+    expect(await screen.findByText(/· Fulfilled/)).toBeInTheDocument();
   });
 
   it('the server really recorded it: a fresh API call shows FULFILLED for one and still-waiting for the other', async () => {

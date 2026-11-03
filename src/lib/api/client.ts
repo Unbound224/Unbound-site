@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { Asset, Credentials, ErrorEnvelope, LoginResult, Merchant, MerchantApplication, Redemption } from './schemas';
+import { AdminMerchant, Asset, Credentials, Dispute, DisputeText, ErrorEnvelope, JobStatus, LoginResult, Merchant, MerchantApplication, NewPassword, Redemption, ResetEmail, SignedXdr } from './schemas';
 
 export class ApiClientError extends Error {
   constructor(
@@ -22,7 +22,21 @@ export const ENDPOINTS = {
   listAssets: { method: 'GET', path: '/v1/assets' },
   listRedemptions: { method: 'GET', path: '/v1/merchants/me/redemptions' },
   confirmRedemption: { method: 'POST', path: '/v1/merchants/me/redemptions/{id}/confirm' },
+  rejectRedemption: { method: 'POST', path: '/v1/merchants/me/redemptions/{id}/reject' },
+  submitEscrowAction: { method: 'POST', path: '/v1/merchants/me/redemptions/{id}/escrow/submit' },
+  requestPasswordReset: { method: 'POST', path: '/v1/auth/password-reset' },
+  confirmPasswordReset: { method: 'POST', path: '/v1/auth/password-reset/confirm' },
+  listDisputes: { method: 'GET', path: '/v1/disputes' },
+  addDisputeMessage: { method: 'POST', path: '/v1/disputes/{id}/messages' },
+  resolveDispute: { method: 'POST', path: '/v1/admin/disputes/{id}/resolve' },
+  listMerchants: { method: 'GET', path: '/v1/admin/merchants' },
+  verifyMerchant: { method: 'POST', path: '/v1/admin/merchants/{id}/verify' },
+  revokeMerchant: { method: 'POST', path: '/v1/admin/merchants/{id}/revoke' },
+  listJobs: { method: 'GET', path: '/v1/admin/jobs' },
+  runJob: { method: 'POST', path: '/v1/admin/jobs/{name}/run' },
 } as const;
+
+const at = (path: string, key: string, value: string) => path.replace(`{${key}}`, encodeURIComponent(value));
 
 export interface ClientOptions {
   baseUrl: string;
@@ -81,6 +95,18 @@ export function createClient(opts: ClientOptions) {
     listRedemptions: () => request('GET', ENDPOINTS.listRedemptions.path, z.object({ redemptions: z.array(Redemption) })).then((r) => r.redemptions),
     confirmRedemption: (id: string) =>
       request('POST', ENDPOINTS.confirmRedemption.path.replace('{id}', encodeURIComponent(id)), Redemption),
+    rejectRedemption: (id: string, reason: string) => request('POST', at(ENDPOINTS.rejectRedemption.path, 'id', id), Redemption, { reason: z.string().trim().min(3).max(500).parse(reason) }),
+    submitEscrowAction: (id: string, signedXdr: string) => request('POST', at(ENDPOINTS.submitEscrowAction.path, 'id', id), Redemption, { signedXdr: SignedXdr.parse(signedXdr).replace(/\s+/g, '') }),
+    requestPasswordReset: (email: string) => request('POST', ENDPOINTS.requestPasswordReset.path, z.object({ accepted: z.literal(true) }), ResetEmail.parse({ email })),
+    confirmPasswordReset: (token: string, password: string) => request('POST', ENDPOINTS.confirmPasswordReset.path, z.object({ ok: z.literal(true) }), NewPassword.parse({ token, password })),
+    listDisputes: () => request('GET', ENDPOINTS.listDisputes.path, z.object({ disputes: z.array(Dispute) })).then((r) => r.disputes),
+    addDisputeMessage: (id: string, text: string) => request('POST', at(ENDPOINTS.addDisputeMessage.path, 'id', id), Dispute, { text: DisputeText.parse(text) }),
+    resolveDispute: (id: string, outcome: 'FOR_HOLDER' | 'FOR_MERCHANT', note: string) => request('POST', at(ENDPOINTS.resolveDispute.path, 'id', id), Dispute, { outcome, note: DisputeText.parse(note) }),
+    listMerchants: () => request('GET', ENDPOINTS.listMerchants.path, z.object({ merchants: z.array(AdminMerchant) })).then((r) => r.merchants),
+    verifyMerchant: (id: string, evidenceRef: string) => request('POST', at(ENDPOINTS.verifyMerchant.path, 'id', id), z.object({ status: z.literal('VERIFIED') }).passthrough(), { evidenceRef: z.string().trim().min(3).max(200).parse(evidenceRef) }),
+    revokeMerchant: (id: string, reason: string) => request('POST', at(ENDPOINTS.revokeMerchant.path, 'id', id), z.object({ ok: z.literal(true) }), { reason: z.string().trim().min(3).max(500).parse(reason) }),
+    listJobs: () => request('GET', ENDPOINTS.listJobs.path, z.object({ jobs: z.array(JobStatus) })).then((r) => r.jobs),
+    runJob: (name: string) => request('POST', at(ENDPOINTS.runJob.path, 'name', name), JobStatus),
   };
 }
 
@@ -92,6 +118,7 @@ const FRIENDLY: Record<string, string> = {
   INVALID_STATE_EXISTS: 'An account with this email already exists.',
   FORBIDDEN: 'Your account is not allowed to do that.',
   INVALID_STATE: 'This redemption cannot be confirmed yet. The returned credit must be confirmed on the ledger first.',
+  GATEWAY_REJECTED: 'The Stellar side refused this step. Nothing was signed or moved; refresh and try again.',
   SENSITIVE_ACTIONS_PAUSED: 'Actions are paused while a ledger discrepancy is investigated.',
   NOT_FOUND: 'That item was not found.',
   BAD_RESPONSE: 'The API answered in an unexpected way. Nothing was changed on your side.',
