@@ -1,5 +1,5 @@
 import { ICONS, Icon, SectionHeading } from '@/components/landing/Section';
-import { MOBILE_RELEASES_URL, OFFICIAL_BADGES, getStoreLinks, type StoreLinks } from '@/lib/site-config';
+import { ANDROID_APK_SHA256_URL, ANDROID_APK_URL, MOBILE_RELEASES_URL, OFFICIAL_BADGES, getStoreLinks, type StoreLinks } from '@/lib/site-config';
 
 /**
  * Store badges are config-driven. Official artwork is loaded from the vendors (never redrawn) and only when a real
@@ -14,7 +14,7 @@ export function StoreButtons({ links }: { links: StoreLinks }) {
           <img src={OFFICIAL_BADGES.playStore} alt="Get it on Google Play" height={60} className="h-[60px] w-auto" />
         </a>
       ) : (
-        <a href={MOBILE_RELEASES_URL} className="btn btn-primary">
+        <a href={ANDROID_APK_URL} className="btn btn-primary" download>
           <Icon d={ICONS.phone} className="h-4 w-4" />
           Download for Android (beta APK)
         </a>
@@ -30,6 +30,34 @@ export function StoreButtons({ links }: { links: StoreLinks }) {
           iOS — coming soon
         </p>
       )}
+    </div>
+  );
+}
+
+/** Secondary links and sideloading help, shown while there is no Play Store listing. */
+export function ApkHelp() {
+  return (
+    <div className="space-y-3 text-sm">
+      <p className="flex flex-wrap gap-x-4 gap-y-1">
+        <a href={MOBILE_RELEASES_URL} className="font-semibold text-link underline underline-offset-4">
+          All releases
+        </a>
+        <a href={ANDROID_APK_SHA256_URL} className="font-semibold text-link underline underline-offset-4">
+          SHA-256 checksum
+        </a>
+      </p>
+      <details className="rounded-xl border border-line bg-bg p-4">
+        <summary className="cursor-pointer font-semibold">How to install an APK</summary>
+        <ol className="mt-3 list-decimal space-y-1.5 pl-5 text-muted">
+          <li>Tap <span className="font-medium text-ink">Download for Android</span> on your phone. The file is <code>unbound-android.apk</code>.</li>
+          <li>
+            When Android asks, allow your browser or file manager to install apps: <span className="font-medium text-ink">Settings &gt; Apps &gt; Special app access &gt; Install unknown apps</span> (wording varies by phone).
+          </li>
+          <li>Open the downloaded file and tap <span className="font-medium text-ink">Install</span>. You can switch the permission off again afterwards.</li>
+          <li>Optional: compare the file&apos;s SHA-256 with the published checksum before installing.</li>
+        </ol>
+        <p className="mt-3 text-muted">Beta builds may be signed with a temporary key. If an update refuses to install, uninstall the old version first. Testnet only: never use real funds.</p>
+      </details>
     </div>
   );
 }
@@ -51,10 +79,11 @@ export function AppDownload() {
             />
             <div data-reveal className="-mt-4 space-y-4">
               <StoreButtons links={links} />
+              {links.playStore ? null : <ApkHelp />}
               <p className="text-sm text-muted">
                 {listed
                   ? 'Testnet only. Store availability may vary by region.'
-                  : 'Not available in any app store yet. The Android beta is a Testnet-only build attached to tagged GitHub Releases, for people comfortable sideloading an APK.'}
+                  : 'Not available in any app store yet. The Android beta is a Testnet-only APK from the latest GitHub Release, for people comfortable sideloading an app.'}
               </p>
             </div>
           </div>

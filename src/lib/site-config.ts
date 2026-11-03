@@ -8,6 +8,12 @@
 
 export const ORG_URL = 'https://github.com/Unbound224';
 export const MOBILE_RELEASES_URL = 'https://github.com/Unbound224/Unbound-mobile/releases';
+/**
+ * Always the newest Android APK: Unbound-mobile's release workflow publishes every v* tag as the latest
+ * (non-prerelease) GitHub Release with the fixed asset name `unbound-android.apk`.
+ */
+export const ANDROID_APK_URL = `${MOBILE_RELEASES_URL}/latest/download/unbound-android.apk`;
+export const ANDROID_APK_SHA256_URL = `${ANDROID_APK_URL}.sha256`;
 
 export type Repo = {
   name: string;

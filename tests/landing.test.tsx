@@ -100,7 +100,13 @@ describe('store badges (the app is not listed in any store)', () => {
     expect(allHrefs(container).filter((h) => STORE_HOST.test(h))).toEqual([]);
     expect(allImgSrcs(container).filter((s) => STORE_HOST.test(s))).toEqual([]);
     expect(screen.queryByAltText(/app store|google play/i)).toBeNull();
-    expect(screen.getByRole('link', { name: 'Download for Android (beta APK)' })).toHaveAttribute('href', MOBILE_RELEASES_URL);
+    expect(screen.getByRole('link', { name: 'Download for Android (beta APK)' })).toHaveAttribute(
+      'href',
+      'https://github.com/Unbound224/Unbound-mobile/releases/latest/download/unbound-android.apk',
+    );
+    expect(screen.getByRole('link', { name: 'All releases' })).toHaveAttribute('href', MOBILE_RELEASES_URL);
+    expect(screen.getByText('How to install an APK')).toBeInTheDocument();
+    expect(container.textContent).toMatch(/Install unknown apps/);
     expect(screen.getByText(/iOS — coming soon/)).not.toHaveAttribute('href');
     expect(screen.getByText(/iOS — coming soon/).closest('a')).toBeNull();
     expect(container.textContent).toMatch(/not available in any app store/i);
@@ -117,6 +123,7 @@ describe('store badges (the app is not listed in any store)', () => {
     );
     expect(screen.queryByText(/beta APK/)).toBeNull();
     expect(screen.queryByText(/coming soon/)).toBeNull();
+    expect(screen.queryByText('How to install an APK')).toBeNull();
   });
 
   it('shows only the configured store; the other platform keeps its fallback', () => {
