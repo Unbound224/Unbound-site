@@ -1,3 +1,4 @@
+import { FlowStory } from '@/components/landing/FlowStory';
 import { ICONS, Icon, SectionHeading, delay } from '@/components/landing/Section';
 
 export const STEPS = [
@@ -26,7 +27,7 @@ export const STEPS = [
     key: 'redemption',
     label: 'Redemption',
     title: 'Or redeem with the issuer',
-    body: 'Return the credit to the issuer on the ledger. The merchant can only mark the redemption fulfilled after that return is confirmed, and a rejection flags a refund.',
+    body: 'The credit waits in a Soroban redemption escrow until the merchant confirms (released to the issuer) or rejects (refunded to you). No answer by the deadline: you take it back.',
     icon: ICONS.receipt,
   },
 ] as const;
@@ -41,7 +42,8 @@ export function HowItWorks() {
           title="From a merchant's promise to value you can move"
           lead="Four steps, each enforced in code and on the ledger. The issuer stays responsible for redemption the whole way through."
         />
-        <div className="relative">
+        <FlowStory />
+        <div className="relative mt-8">
         <div aria-hidden="true" className="absolute left-0 right-0 top-[2.9rem] hidden h-px bg-gradient-to-r from-transparent via-accent/50 to-transparent lg:block" />
         <ol className="relative grid gap-5 md:grid-cols-2 lg:grid-cols-4">
           {STEPS.map((s, i) => (

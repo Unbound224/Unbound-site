@@ -25,7 +25,7 @@ describe('landing sections', () => {
   it('renders every section with a labelled heading, in order', () => {
     const { container } = render(<Home />);
     const ids = Array.from(container.querySelectorAll('section')).map((s) => s.getAttribute('aria-labelledby'));
-    expect(ids).toEqual(['hero-title', 'how-title', 'features-title', 'trust-title', 'app-title', 'merchants-title', 'oss-title', 'faq-title']);
+    expect(ids).toEqual(['hero-title', 'how-title', 'quote-title', 'who-title', 'features-title', 'hood-title', 'trust-title', 'app-title', 'merchants-title', 'oss-title', 'faq-title']);
     for (const id of ids) expect(container.querySelector(`#${id}`)?.textContent?.trim()).toBeTruthy();
     for (const anchor of ['how-it-works', 'trust', 'app', 'merchants', 'open-source', 'faq']) expect(container.querySelector(`#${anchor}`)).not.toBeNull();
   });
