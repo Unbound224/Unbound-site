@@ -59,9 +59,8 @@ targets; `./data` not created on first start; smoke-script timing and error-name
 
 ## 2. Mobile (OWNER for the phone)
 
-**APK build on this machine (2026-11-04).** `flutter build apk --release` **succeeded**: `app-release.apk`, 52.5 MB (55,025,628 bytes), debug-signed,
-SHA-256 `c67b9c10b7e0c2925b5b761b0bdb26f50d3ef1a4328a2b4152758b0ffdc40053`. That build predates the screenshot-blocking Kotlin change; the release workflow
-rebuilds from `main`. It was **never installed on any phone or emulator**. Two real problems were found and handled:
+**APK build on this machine (2026-11-04).** `flutter build apk --release` **succeeded** from the pushed `main` (including the screenshot-blocking
+Kotlin change): `app-release.apk`, 52.5 MB (55,025,628 bytes), debug-signed, SHA-256 `3a02d1ff23bf4f63261c6dfdf2d7d5c332021fb7deb65e9f1e72248542215ccd`. The release workflow rebuilds from `main` with its own key. It was **never installed on any phone or emulator**. Two real problems were found and handled:
 
 - Release builds failed `checkReleaseAarMetadata` because the `stellar_flutter_sdk` plugin compiled against android-34 while its AndroidX
   dependencies need 35+. Fixed in `android/build.gradle.kts` (plugin modules compile against SDK 36), pushed. The GitHub Linux release workflow
