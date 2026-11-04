@@ -62,6 +62,22 @@ describe('SignInForm', () => {
     expect(client.login).not.toHaveBeenCalled();
   });
 
+  it('asks for the one-time code when core answers MFA_REQUIRED, then signs in with it', async () => {
+    const login = vi.fn()
+      .mockRejectedValueOnce(new ApiClientError('MFA_REQUIRED', 'a one-time code from your authenticator app is required', 401))
+      .mockResolvedValueOnce({ token: 'tok', role: 'admin', accountId: 'acc_1' });
+    const client = fakeClient({ login });
+    withSession(<SignInForm allowRegister={false} />, client, false);
+    expect(screen.queryByLabelText('One-time code')).not.toBeInTheDocument();
+    await userEvent.type(screen.getByLabelText('Email'), 'admin@example.invalid');
+    await userEvent.type(screen.getByLabelText('Password'), 'a long enough password');
+    await userEvent.click(screen.getByRole('button', { name: 'Sign in' }));
+    await userEvent.type(await screen.findByLabelText('One-time code'), '123456');
+    await userEvent.click(screen.getByRole('button', { name: 'Sign in' }));
+    await waitFor(() => expect(login).toHaveBeenLastCalledWith({ email: 'admin@example.invalid', password: 'a long enough password', code: '123456' }));
+    expect(login).toHaveBeenCalledTimes(2);
+  });
+
   it('signs in and stores the token only in memory', async () => {
     const client = fakeClient();
     const setItem = vi.spyOn(Storage.prototype, 'setItem');

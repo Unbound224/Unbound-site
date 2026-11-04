@@ -29,6 +29,11 @@ export function AdminConsole() {
   return <Admin key="admin" />;
 }
 
+/** 30 s jobs (e.g. sync-trusted-assets) must not read as "1 min". */
+export function formatInterval(ms: number): string {
+  return ms < 60_000 ? `${Math.round(ms / 1000)} s` : `${Math.round(ms / 60_000)} min`;
+}
+
 function Admin() {
   const session = useSession();
   const [load, setLoad] = useState<Load>({ status: 'loading' });
@@ -165,7 +170,7 @@ function Admin() {
                   {load.jobs.map((j) => (
                     <tr key={j.name} className="border-b border-line align-top">
                       <td className="py-2 pr-3 font-mono text-xs">{j.name}</td>
-                      <td className="py-2 pr-3">{Math.round(j.intervalMs / 60_000)} min</td>
+                      <td className="py-2 pr-3">{formatInterval(j.intervalMs)}</td>
                       <td className="py-2 pr-3">{j.lastFinishedAt ? `${new Date(j.lastFinishedAt).toUTCString()} (${j.lastItems ?? 0} changed)` : 'not run yet'}</td>
                       <td className="py-2 pr-3">{j.consecutiveFailures ? <span className="text-danger">Failing ({j.consecutiveFailures}x): {j.lastError}</span> : 'OK'}</td>
                       <td className="py-2">

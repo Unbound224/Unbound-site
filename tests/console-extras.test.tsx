@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest';
 import type { ReactNode } from 'react';
 import { axe } from 'vitest-axe';
 import * as matchers from 'vitest-axe/matchers';
-import { AdminConsole } from '@/components/AdminConsole';
+import { AdminConsole, formatInterval } from '@/components/AdminConsole';
 import { Dashboard } from '@/components/Dashboard';
 import { ForgotPasswordForm, ResetPasswordForm } from '@/components/PasswordReset';
 import { ApiClientError, createClient, type Client } from '@/lib/api/client';
@@ -135,6 +135,12 @@ describe('reviewer console', () => {
     unmount();
     ui(<AdminConsole />, admin(), 'merchant');
     expect(screen.getByRole('alert')).toHaveTextContent(/not a reviewer account/i);
+  });
+
+  it('formats job intervals without rounding 30 s up to a minute', () => {
+    expect(formatInterval(30_000)).toBe('30 s');
+    expect(formatInterval(60_000)).toBe('1 min');
+    expect(formatInterval(120_000)).toBe('2 min');
   });
 
   it('shows counts, escalated disputes first, failing jobs, and is accessible', async () => {

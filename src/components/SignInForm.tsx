@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useId, useState, type FormEvent } from 'react';
 import { ApiClientError, describeError } from '@/lib/api/client';
-import { Credentials } from '@/lib/api/schemas';
+import { Credentials, LoginCredentials } from '@/lib/api/schemas';
 import { useSession } from '@/lib/session';
 
 /** Email + password sign-in / registration against unbound-core. Registration grants no authority until an admin verifies the merchant. */
@@ -14,6 +14,9 @@ export function SignInForm({ allowRegister = true, title }: { allowRegister?: bo
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
   const [failure, setFailure] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  // an admin account with MFA enabled answers the first login with MFA_REQUIRED; then the code field appears
+  const [needCode, setNeedCode] = useState(false);
+
 
   async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -31,9 +34,11 @@ export function SignInForm({ allowRegister = true, title }: { allowRegister?: bo
     try {
       const client = session.client();
       if (mode === 'register') await client.register(parsed.data);
-      const res = await client.login(parsed.data);
+      const code = String(fd.get('code') ?? '').trim();
+      const res = await client.login(LoginCredentials.parse({ ...parsed.data, ...(code ? { code } : {}) }));
       session.setToken(res.token, res.role);
     } catch (err) {
+      if (err instanceof ApiClientError && err.code === 'MFA_REQUIRED') setNeedCode(true);
       setFailure(err instanceof ApiClientError && err.code === 'INVALID_STATE' ? 'An account with this email already exists.' : describeError(err));
     } finally {
       setBusy(false);
@@ -72,6 +77,15 @@ export function SignInForm({ allowRegister = true, title }: { allowRegister?: bo
       </h2>
       {field('email', 'Email', 'email', 'The email you registered with.', mode === 'login' ? 'username' : 'email')}
       {field('password', 'Password', 'password', 'At least 12 characters.', mode === 'login' ? 'current-password' : 'new-password')}
+      {needCode && mode === 'login' ? (
+        <div className="space-y-1">
+          <label htmlFor={`${id}-code`} className="block font-medium">
+            One-time code
+          </label>
+          <input id={`${id}-code`} name="code" inputMode="numeric" pattern="[0-9]{6}" maxLength={6} autoComplete="one-time-code" className="w-full rounded-md border border-ink bg-surface px-3 py-2 text-ink" />
+          <p className="text-sm text-muted">The 6 digit code from your authenticator app.</p>
+        </div>
+      ) : null}
       {failure ? (
         <p role="alert" className="font-medium text-danger">
           {failure}

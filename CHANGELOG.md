@@ -6,6 +6,10 @@ deployment exists.
 ## [Unreleased]
 
 ### Added
+- Merchant escrow panel: "Sign with Freighter" (`src/lib/freighter.ts`, fail closed: wallet installed and approved, signing account
+  is the credit issuer, wallet on Testnet); admin sign-in asks for a one-time code when core answers `MFA_REQUIRED`;
+  `docs/OWNER_CHECKLIST.md`.
+- Fixed: the job table showed a 30 s job as "1 min".
 - Landing: animated five-step diagram (issuer -> wallet -> DEX, redemption escrow, confirm / reject / timeout),
   interactive quote explainer (slippage cap, minimum received), "Who it is for" illustrated cards, animated
   "Under the hood" data path. Reduced-motion safe, light/dark, 360 px.

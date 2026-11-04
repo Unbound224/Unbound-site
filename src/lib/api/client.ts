@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { AdminMerchant, Asset, Credentials, Dispute, DisputeText, ErrorEnvelope, JobStatus, LoginResult, Merchant, MerchantApplication, NewPassword, Redemption, ResetEmail, SignedXdr } from './schemas';
+import { AdminMerchant, Asset, Credentials, Dispute, DisputeText, ErrorEnvelope, JobStatus, LoginCredentials, LoginResult, Merchant, MerchantApplication, NewPassword, Redemption, ResetEmail, SignedXdr } from './schemas';
 
 export class ApiClientError extends Error {
   constructor(
@@ -87,7 +87,7 @@ export function createClient(opts: ClientOptions) {
 
   return {
     register: (input: Credentials) => request('POST', ENDPOINTS.register.path, z.object({ id: z.string(), email: z.string() }), Credentials.parse(input)),
-    login: (input: Credentials) => request('POST', ENDPOINTS.login.path, LoginResult, Credentials.parse(input)),
+    login: (input: LoginCredentials) => request('POST', ENDPOINTS.login.path, LoginResult, LoginCredentials.parse(input)),
     logout: () => request('POST', ENDPOINTS.logout.path, z.object({ ok: z.boolean() }), {}),
     apply: (input: MerchantApplication) => request('POST', ENDPOINTS.apply.path, Merchant, MerchantApplication.parse(input)),
     listAssets: (issuer?: string) =>

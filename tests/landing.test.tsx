@@ -66,7 +66,7 @@ describe('landing sections', () => {
     );
     expect(REPOS).toHaveLength(4);
     // The status table is honest about what has not happened yet.
-    expect(within(oss).getByRole('table')).toHaveTextContent(/Live Stellar Testnet run.*Not yet/);
+    expect(within(oss).getByRole('table')).toHaveTextContent(/Runs on real phones and wallets.*Not yet/);
   });
 
   it('FAQ is native disclosure widgets, collapsed by default', async () => {

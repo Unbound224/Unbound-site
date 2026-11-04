@@ -128,7 +128,10 @@ Legend: **Built** = implemented and covered by automated tests in this repo. **N
 | Typed API client (zod-validated, timeouts); every endpoint checked against core's OpenAPI fixture | Built |
 | Live-core test: spawns the real `Unbound-core` (SQLite, fake gateway, synthetic seed) and drives the components | Built (skipped without the sibling checkout) |
 | Accessibility: axe-core checks in jsdom on every page and state | Built; colour contrast and manual screen-reader audit not done |
-| Policy-signing helper, issuing credit from the UI, signing escrow actions with a browser wallet (Freighter), MFA | Not yet |
+| Escrow confirm / reject signed with the Freighter browser wallet (fail closed: must be the credit issuer's account, on Testnet); paste-a-signed-XDR path kept | Built and tested with a mocked wallet; **not tried with a real Freighter install** (needs the owner's browser) |
+| Admin sign-in with a one-time code when the account has MFA enabled (core issues `MFA_REQUIRED`) | Built and tested; MFA enrolment has no UI yet (core endpoints only) |
+| Live click-through against a running core on Testnet data: merchant console (3 real escrow redemptions in their final states, buttons disabled when closed), reviewer console (review queue, jobs incl. `sync-trusted-assets`), password reset pages | Done 2026-11-04 in the built-in browser; found one display bug (30 s job shown as "1 min"), fixed |
+| Issuing credit from the UI, policy-signing helper | Not yet |
 | Browser E2E in CI, Lighthouse, public deployment | Not yet |
 | Official store badges | Not shown: there are no store listings |
 

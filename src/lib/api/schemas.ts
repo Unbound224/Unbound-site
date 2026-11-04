@@ -133,3 +133,7 @@ export const Credentials = z
   })
   .strict();
 export type Credentials = z.infer<typeof Credentials>;
+
+/** Login adds the optional one-time code of an admin account that enabled MFA. */
+export const LoginCredentials = Credentials.extend({ code: z.string().trim().regex(/^[0-9]{6}$/, 'Enter the 6 digit code').optional() }).strict();
+export type LoginCredentials = z.infer<typeof LoginCredentials>;

@@ -3,6 +3,7 @@
 import { useId, useState, type FormEvent } from 'react';
 import { describeError } from '@/lib/api/client';
 import { SignedXdr, type Redemption } from '@/lib/api/schemas';
+import { signWithFreighter, WalletError } from '@/lib/freighter';
 import { ACTION_LABEL } from '@/lib/redemption';
 import { useSession } from '@/lib/session';
 
@@ -25,6 +26,20 @@ export function EscrowSignPanel({ redemption, onDone }: { redemption: Redemption
       setCopied(true);
     } catch {
       setCopied(false);
+    }
+  }
+
+  async function signInWallet() {
+    setError(null);
+    setBusy(true);
+    try {
+      const raw = await signWithFreighter(e!.pendingXdr!, redemption.asset.issuer);
+      const signed = SignedXdr.parse(raw); // the wallet's answer gets the same shape check as pasted text
+      onDone(await session.client().submitEscrowAction(redemption.id, signed));
+    } catch (err) {
+      setError(err instanceof WalletError ? err.message : describeError(err));
+    } finally {
+      setBusy(false);
     }
   }
 
@@ -71,6 +86,12 @@ export function EscrowSignPanel({ redemption, onDone }: { redemption: Redemption
         <span className="text-xs text-muted">
           Hash <code className="break-all">{e.pendingTxHash}</code>
         </span>
+      </div>
+      <div className="flex flex-wrap items-center gap-3">
+        <button type="button" onClick={signInWallet} disabled={busy} className="rounded-md bg-primary px-4 py-2 font-semibold text-white disabled:opacity-60">
+          Sign with Freighter
+        </button>
+        <span className="text-xs text-muted">Testnet only. The signing account must be the credit issuer. Or paste a signed envelope below.</span>
       </div>
       <label htmlFor={`${id}-s`} className="block text-sm font-medium">
         Signed transaction (XDR)

@@ -3,10 +3,11 @@ import { ORG_URL, REPOS } from '@/lib/site-config';
 
 const STATUS = [
   { area: 'Issuer verification, signed policies, exchange-intent state machine, reconciliation', state: 'Built, tested offline' },
-  { area: 'Stellar quotes, transaction builders, gateway service and chain worker', state: 'Built, tested on a local simulator' },
+  { area: 'Stellar quotes, transaction builders, gateway service and chain worker', state: 'Built; run on Stellar Testnet (Nov 2026)' },
+  { area: 'Soroban redemption escrow and a SHOP to USDC exchange through core and the gateway', state: 'Deployed and exercised on Testnet' },
   { area: 'Flutter app with on-device XDR inspection and signing', state: 'Built, widget-tested; not yet run on devices' },
   { area: 'Landing site and merchant console', state: 'Built, tested against a real core process' },
-  { area: 'Live Stellar Testnet run, app store listings, external security audit, Mainnet', state: 'Not yet' },
+  { area: 'Runs on real phones and wallets, app store listings, external security audit, Mainnet', state: 'Not yet' },
 ] as const;
 
 function Diagram() {
