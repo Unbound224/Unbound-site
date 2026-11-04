@@ -63,9 +63,14 @@ beforeAll(async () => {
   process.env.NEXT_PUBLIC_API_URL = `http://127.0.0.1:${port}`;
 }, 90_000);
 
-afterAll(() => {
-  child?.kill('SIGTERM');
-  if (dir) rmSync(dir, { recursive: true, force: true });
+afterAll(async () => {
+  // Wait for the core process to exit before deleting its SQLite file: Windows refuses to delete an open file.
+  if (child && child.exitCode === null) {
+    const exited = new Promise<void>((resolve) => child!.once('exit', () => resolve()));
+    child.kill('SIGTERM');
+    await Promise.race([exited, new Promise<void>((resolve) => setTimeout(resolve, 10_000))]);
+  }
+  if (dir) rmSync(dir, { recursive: true, force: true, maxRetries: 10, retryDelay: 200 });
 });
 
 const api = (path: string, init: RequestInit = {}) => fetch(process.env.NEXT_PUBLIC_API_URL + path, init);
