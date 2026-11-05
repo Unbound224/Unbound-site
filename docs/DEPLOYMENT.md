@@ -32,3 +32,17 @@ LOG_LEVEL=info
 - Never republish user transactions solely because a client request timed out.
 - Test signing-key rotation, dependency outages, stale quotes, malicious user input, insufficient balances and duplicate delivery.
 - External reference infrastructure may change; check upstream project versions and licenses at build time.
+
+## Hosted deployment (2026-11-05)
+
+Vercel project `unbound-site` (domain `unbound-web1.vercel.app`), Production environment variables, all public values:
+
+| Variable | Value |
+|---|---|
+| `NEXT_PUBLIC_API_URL` | `/core` (the browser calls this site's same-origin proxy) |
+| `CORE_PROXY_TARGET` | `https://unbound-core.onrender.com` (Unbound-core on Render, free plan) |
+
+`next.config.ts` reads `CORE_PROXY_TARGET` at build time to create the `/core/*` rewrite, so changing it needs a new build.
+Core and the Stellar gateway run on free Render instances: they sleep when idle (the first request after a pause can take 50
+seconds or more) and core's SQLite data resets on every redeploy. Core refuses to start unless `APP_ENV=development`; this is a
+development entrypoint, not a hardened production mode.
