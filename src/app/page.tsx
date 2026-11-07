@@ -1,4 +1,7 @@
 import { AppDownload } from '@/components/landing/AppDownload';
+import { Audiences } from '@/components/landing/Audiences';
+import { QuoteExplainer } from '@/components/landing/QuoteExplainer';
+import { UnderTheHood } from '@/components/landing/UnderTheHood';
 import { Faq } from '@/components/landing/Faq';
 import { Features } from '@/components/landing/Features';
 import { Hero } from '@/components/landing/Hero';
@@ -12,7 +15,10 @@ export default function Home() {
     <>
       <Hero />
       <HowItWorks />
+      <QuoteExplainer />
+      <Audiences />
       <Features />
+      <UnderTheHood />
       <Trust />
       <AppDownload />
       <Merchants />

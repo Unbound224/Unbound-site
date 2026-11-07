@@ -12,6 +12,7 @@ import { SignInForm } from '@/components/SignInForm';
 import { SiteFooter, SiteHeader, TestnetBanner } from '@/components/SiteChrome';
 import type { Client } from '@/lib/api/client';
 import { SessionProvider } from '@/lib/session';
+import { allClientMocks } from './client-mocks';
 
 expect.extend(matchers);
 
@@ -20,6 +21,7 @@ expect.extend(matchers);
 const AXE = { rules: { 'color-contrast': { enabled: false } } } as const;
 
 const client = (over: Partial<Client> = {}): Client => ({
+  ...allClientMocks(),
   register: vi.fn(),
   login: vi.fn().mockRejectedValue(new Error('x')),
   logout: vi.fn().mockResolvedValue({ ok: true }),
@@ -83,9 +85,10 @@ describe('accessibility (axe-core in jsdom; contrast not checked)', () => {
     await screen.findByText(/at least 2 characters/i);
     await expectNoViolations(container);
   });
-  it('console with programs and a redemption table (enabled, disabled and refund states)', async () => {
+  it('console with programs and a redemption queue (enabled, disabled and refund states)', async () => {
     const { container } = page(<Dashboard />, true);
-    await screen.findByRole('table');
+    await screen.findByRole('region', { name: /redemption queue/i });
+    await screen.findByText('30.0000000 SHOP', { exact: false });
     await expectNoViolations(container);
   });
   it('console empty and error states', async () => {

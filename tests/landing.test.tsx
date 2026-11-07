@@ -25,7 +25,7 @@ describe('landing sections', () => {
   it('renders every section with a labelled heading, in order', () => {
     const { container } = render(<Home />);
     const ids = Array.from(container.querySelectorAll('section')).map((s) => s.getAttribute('aria-labelledby'));
-    expect(ids).toEqual(['hero-title', 'how-title', 'features-title', 'trust-title', 'app-title', 'merchants-title', 'oss-title', 'faq-title']);
+    expect(ids).toEqual(['hero-title', 'how-title', 'quote-title', 'who-title', 'features-title', 'hood-title', 'trust-title', 'app-title', 'merchants-title', 'oss-title', 'faq-title']);
     for (const id of ids) expect(container.querySelector(`#${id}`)?.textContent?.trim()).toBeTruthy();
     for (const anchor of ['how-it-works', 'trust', 'app', 'merchants', 'open-source', 'faq']) expect(container.querySelector(`#${anchor}`)).not.toBeNull();
   });
@@ -66,7 +66,7 @@ describe('landing sections', () => {
     );
     expect(REPOS).toHaveLength(4);
     // The status table is honest about what has not happened yet.
-    expect(within(oss).getByRole('table')).toHaveTextContent(/Live Stellar Testnet run.*Not yet/);
+    expect(within(oss).getByRole('table')).toHaveTextContent(/Runs on real phones and wallets.*Not yet/);
   });
 
   it('FAQ is native disclosure widgets, collapsed by default', async () => {
@@ -100,7 +100,13 @@ describe('store badges (the app is not listed in any store)', () => {
     expect(allHrefs(container).filter((h) => STORE_HOST.test(h))).toEqual([]);
     expect(allImgSrcs(container).filter((s) => STORE_HOST.test(s))).toEqual([]);
     expect(screen.queryByAltText(/app store|google play/i)).toBeNull();
-    expect(screen.getByRole('link', { name: 'Download for Android (beta APK)' })).toHaveAttribute('href', MOBILE_RELEASES_URL);
+    expect(screen.getByRole('link', { name: 'Download for Android (beta APK)' })).toHaveAttribute(
+      'href',
+      'https://github.com/Unbound224/Unbound-mobile/releases/latest/download/unbound-android.apk',
+    );
+    expect(screen.getByRole('link', { name: 'All releases' })).toHaveAttribute('href', MOBILE_RELEASES_URL);
+    expect(screen.getByText('How to install an APK')).toBeInTheDocument();
+    expect(container.textContent).toMatch(/Install unknown apps/);
     expect(screen.getByText(/iOS — coming soon/)).not.toHaveAttribute('href');
     expect(screen.getByText(/iOS — coming soon/).closest('a')).toBeNull();
     expect(container.textContent).toMatch(/not available in any app store/i);
@@ -117,6 +123,7 @@ describe('store badges (the app is not listed in any store)', () => {
     );
     expect(screen.queryByText(/beta APK/)).toBeNull();
     expect(screen.queryByText(/coming soon/)).toBeNull();
+    expect(screen.queryByText('How to install an APK')).toBeNull();
   });
 
   it('shows only the configured store; the other platform keeps its fallback', () => {
