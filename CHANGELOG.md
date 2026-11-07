@@ -1,14 +1,13 @@
 # Changelog
 
-Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). Versions are tagged by the maintainer. No public
-deployment exists.
+Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/). The Testnet prototype is deployed at
+https://unbound-web1.vercel.app (Vercel); there is no Mainnet deployment.
 
-## [Unreleased]
+## [0.1.0] - 2026-11-06 - Testnet prototype
 
 ### Added
 - Merchant escrow panel: "Sign with Freighter" (`src/lib/freighter.ts`, fail closed: wallet installed and approved, signing account
-  is the credit issuer, wallet on Testnet); admin sign-in asks for a one-time code when core answers `MFA_REQUIRED`;
-  `docs/OWNER_CHECKLIST.md`.
+  is the credit issuer, wallet on Testnet); admin sign-in asks for a one-time code when core answers `MFA_REQUIRED`.
 - Fixed: the job table showed a 30 s job as "1 min".
 - Landing: animated five-step diagram (issuer -> wallet -> DEX, redemption escrow, confirm / reject / timeout),
   interactive quote explainer (slippage cap, minimum received), "Who it is for" illustrated cards, animated
@@ -24,5 +23,5 @@ deployment exists.
 ### Changed
 - Redemption queue is a list of cards instead of a table.
 
-## [0.1.0] - pre-release scaffold
+## Earlier work
 - Landing, sign-in, merchant application and console skeleton, typed API client.
