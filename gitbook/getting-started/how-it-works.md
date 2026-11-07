@@ -60,4 +60,4 @@ A separate **chain worker** in the gateway repo watches pending transaction hash
 | Merchant never answers a redemption | Escrow deadline passes, then `expire_refund` returns the credit |
 | Ledger and database disagree | Core pauses sensitive actions until a reviewer looks (`SENSITIVE_ACTIONS_PAUSED`, HTTP 423) |
 
-See [Failure modes](../architecture/failure-modes.md) for the full list.
+See the [core security and operational notes](https://github.com/Unbound224/Unbound-core/blob/main/docs/SECURITY.md) for the full list.

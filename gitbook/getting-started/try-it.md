@@ -36,7 +36,7 @@ curl https://unbound-core.onrender.com/v1/targets
 { "targets": [] }
 ```
 
-Both lists are empty on the hosted instance because nobody has registered a program there since its last restart. To see populated responses, run the stack locally and seed it. The [local setup](../developers/local-setup.md) page shows how, and the [API reference](../api/overview.md) shows every response with real data.
+Both lists are empty on the hosted instance because nobody has registered a program there since its last restart. To see populated responses, run the stack locally and seed it using the [core quick start](https://github.com/Unbound224/Unbound-core#quick-start).
 
 ## Try the landing page and consoles
 
@@ -49,4 +49,4 @@ The consoles talk to core through a same-origin proxy at `/core/*`. That is why 
 
 ## Run it all locally
 
-The full walkthrough, with the exact commands and environment variables for core, the gateway, the site and synthetic seed data, is in [Local setup](../developers/local-setup.md).
+The repository quick starts provide the exact commands and environment variables for [core](https://github.com/Unbound224/Unbound-core#quick-start), [the Stellar layer](https://github.com/Unbound224/Unbound-stellar#quick-start), [the site](https://github.com/Unbound224/Unbound-site#quick-start), and [the mobile app](https://github.com/Unbound224/Unbound-mobile#quick-start).

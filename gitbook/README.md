@@ -34,11 +34,11 @@ Two failures make this hard, and Unbound is built around them:
 | Landing page and consoles | [Unbound-site](https://github.com/Unbound224/Unbound-site) | Live at [unbound-web1.vercel.app](https://unbound-web1.vercel.app) |
 | Consumer wallet | [Unbound-mobile](https://github.com/Unbound224/Unbound-mobile) | Built, tested. A release APK builds. Never run on a phone |
 
-The [Testnet evidence](evidence/testnet-evidence.md) page lists every contract id and transaction hash with an explorer link, and says what each one proves. The [roadmap and known gaps](project/roadmap-and-known-gaps.md) page lists what is not done.
+The [Unbound-stellar deployment record](https://github.com/Unbound224/Unbound-stellar/blob/main/docs/DEPLOYMENT.md) lists the Testnet contract id and transaction hashes with explorer links. The status tables in each repository README state what is not done.
 
 ## Where to go next
 
 - New to the idea: read [How it works](getting-started/how-it-works.md), then [Core concepts](concepts/credit-and-issuers.md).
-- Integrating: start at the [API overview](api/overview.md).
-- Reviewing the contract: go to the [contract overview](contract/overview.md).
-- Contributing: read [Contributing](project/contributing.md) and the open issues labeled `Stellar Wave`.
+- Integrating: start with the [core API README](https://github.com/Unbound224/Unbound-core#quick-start).
+- Reviewing the contract: use the [stellar-layer README](https://github.com/Unbound224/Unbound-stellar#quick-start) and its linked contract evidence.
+- Contributing: read [Contributing](https://github.com/Unbound224/Unbound-site/blob/main/CONTRIBUTING.md) and the open issues labeled `Stellar Wave`.
