@@ -47,3 +47,16 @@
 - [Exchange](api/exchange.md)
 - [Redemptions and disputes](api/redemptions-and-disputes.md)
 - [Admin](api/admin.md)
+
+## Operations
+
+- [Deployment](deployment.md)
+- [Security](security.md)
+- [Testing and CI](testing-and-ci.md)
+- [Verified Testnet evidence](testnet-evidence.md)
+
+## Project
+
+- [Roadmap and known gaps](roadmap.md)
+- [Contributing](contributing.md)
+- [FAQ](faq.md)
