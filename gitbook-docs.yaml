@@ -1,11 +1,12 @@
 $schema: https://api.gitbook.com/gitbook-docs.yaml
+version: 1
 site:
-  title: Stellar Wave Portfolio
+  title: Unbound Documentation
   structure:
     - type: space
-      key: space-1
+      key: unbound-documentation
       title: Documentation
       path: documentation
       default: true
       content:
-        directory: ./documentation
+        directory: ./gitbook
