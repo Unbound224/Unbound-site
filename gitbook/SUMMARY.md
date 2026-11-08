@@ -38,3 +38,12 @@
 - [Local setup](development/local-setup.md)
 - [Environment variables](development/environment-variables.md)
 - [Testing strategy and running against Testnet](development/testing-and-testnet.md)
+
+## API reference
+
+- [Overview](api/overview.md)
+- [Auth and wallets](api/auth-and-wallets.md)
+- [Issuers and assets](api/issuers-and-assets.md)
+- [Exchange](api/exchange.md)
+- [Redemptions and disputes](api/redemptions-and-disputes.md)
+- [Admin](api/admin.md)
